@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Learn JQuery</title>
+	<style>
+		.red { color: red; }
+		.green { color: green; }
+	</style>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+	<script>
+	$(document).ready(function() {
+
+
+		/*
+		$('.myLink').on('click', function() {
+			$('h1').addClass('green');
+			$('h1').fadeToggle(500);
+		});
+		$('.myLink').on('mouseenter', function() {
+			$('h1').slideUp(600);
+		});
+		$('.myLink').on('mouseleave', function() {
+			$('h1').slideDown(600);
+		});
+		$('.myLink').on('mouseenter', function() {
+			$('h1').addClass('red');
+		});
+		$('.myLink').on('mouseleave', function() {
+			$('h1').removeClass('red');
+		});
+		*/
+
+		$('.myLink').click(function() {
+			// $('h1').text("Hello World!");
+			// $('h1').html("<a href='#'>Hello World!</a>");
+			// $('h1').replaceWith("<h3>Hello World!</h3>");
+			// $('h1').append("<h3>Hello World!</h3>");
+			$('h1').css('color', 'purple');
+		})
+
+	});
+	</script>
+</head>
+<body>
+	<h1>Welcome everyone!</h1>
+	<a href="#" class="myLink">Click Me</a>
+</body>
+</html>
