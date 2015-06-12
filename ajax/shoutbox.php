@@ -11,7 +11,7 @@
 		date_default_timezone_set('America/New_York');
 		$date = date('h:i:s a', time());
 
-		$query = "INSERT TABLE shouts (name, shout, date) VALUES ($name, $shout, $date)";
+		$query = "INSERT INTO shouts (name, shout, date) VALUES ($name, $shout, $date)";
 
 		if (!mysql_query($con, $query)) {
 			echo 'Error: ' . mysql_error($son);
