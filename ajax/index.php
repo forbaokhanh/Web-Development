@@ -1,4 +1,11 @@
 <?php include 'database.php'; ?>
+<?php
+// Create Select Query
+$query = "SELECT * FROM shouts ORDER BY id DESC";
+$shouts = mysqli_query($con, $query);
+echo $shouts;
+
+?>
 <!DOCTYPE html>
 <html>
 	<head>
@@ -15,7 +22,10 @@
 			</header>
 			<div id="shouts">
 				<ul>
-					<li></li>
+				<?php while($row = mysqli_fetch_assoc($shouts)) : ?>
+					$name . ': ' . $shout . ' [' . $date .']
+					<li><?php echo $row['name'] . ': ' . $row['shout'] . ' [' . $row['date'] . ']'; ?></li>
+				<?php endwhile; ?>
 				</ul>
 			</div>
 			<footer>
