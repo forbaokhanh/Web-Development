@@ -73,7 +73,8 @@
 	$(document).ready(function() {
 		$('[required="required"]').prev('label').append('<span>*</span>').children('span').addClass('required');
 		$('tbody tr:even').addClass('even');
-		$('#btnAddClass').click(function(e) {
+
+		$('#btnAddTask').click(function(e) {
 			e.preventDefault();
 			$('#taskCreation').removeClass('not');
 		});
