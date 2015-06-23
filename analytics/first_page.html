@@ -4,3 +4,73 @@
   <title>First Page Analytics</title>
 </head>
 <body>
+<div class="container">
+	<h1>First Page analytics</h1>
+</div>
+
+<!-- Load the Embed library -->
+<script src="embedapi.js"></script>
+
+<section id="view-selector"></section>
+<section id="timeline"></section>
+
+<script>
+	gapi.analytics.ready(function() {
+		// gapi.analytics.createComponent('MyComponent', {
+		//   foo: function() {
+		//     alert('foo');
+		//   },
+		//   bar: function() {
+		//     alert('bar');
+		//   }
+		// });
+
+		// var myComponentInstance = new gapi.analytics.ext.MyComponent();
+		// myComponentInstance.foo(); // Alerts 'foo'.
+
+		// gapi.analytics.createComponent('ComplicatedComponent', {
+		// 	initialize: function(options) {
+		// 		this.name = options.name;
+		// 		this.isRendered = false;
+		// 	}
+		// });
+
+		// var mci = new gapi.analytics.ext.ComplicatedComponent({name: 'Genevieve'});
+		// alert(mci.name);
+		// alert(mci.isRendered);
+		// Step 4: Create the view selector.
+
+		var viewSelector = new gapi.analytics.ViewSelector({
+		container: 'view-selector'
+		});
+
+		// Step 5: Create the timeline chart.
+
+		var timeline = new gapi.analytics.googleCharts.DataChart({
+		reportType: 'ga',
+		query: {
+		  'dimensions': 'ga:date',
+		  'metrics': 'ga:sessions',
+		  'start-date': '30daysAgo',
+		  'end-date': 'yesterday',
+		},
+		chart: {
+		  type: 'LINE',
+		  container: 'timeline'
+		}
+		});
+
+		viewSelector.execute();
+		viewSelector.on('change', function(ids) {
+			var newIds = {
+			  query: {
+			    ids: ids
+			  }
+			}
+			timeline.set(newIds).execute();
+			});
+
+
+	});
+</script>
+</body>
