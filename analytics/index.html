@@ -13,29 +13,28 @@
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
   <!-- Embed Library -->
+  <script language="JavaScript" type="text/javascript" src="http://kjur.github.io/jsrsasign/jsrsasign-4.1.4-all-min.js"></script>
+  <script language="JavaScript" type="text/javascript" src="js/json-minified.js"></script>
+  <script language="JavaScript" type="text/javascript" src="js/jws-3.1.min.js"></script>
+
+  <script src="https://apis.google.com/js/client.js"></script>   
+
   <script src="js/embedapi.js"></script>
   <script src="js/ga.js"></script>
   <script src="js/script.js"></script>
-
 </head>
 <body>
-<header class="container" id="theButton">
-  <!-- not visible with the other two -->
-  <section id="auth-button"></section>
-  <br>
-  <section id="view-selector"></section>
-</header>
 
 <div class="container" id="body">
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" id="myTabs" role="tablist">
     <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab" data-toggle="tab">General</a></li>
-    <li role="presentation"><a href="#socialMedia" aria-controls="socialMedia" role="tab" data-toggle="tab">Social Media</a></li>
-    <li role="presentation"><a href="#audience" aria-controls="audience" role="tab" data-toggle="tab">Audience</a></li>
-    <li role="presentation"><a href="#technology" aria-controls="technology" role="tab" data-toggle="tab">Technology</a></li>
-    <li role="presentation"><a href="#popularTrends" aria-controls="popularTrends" role="tab" data-toggle="tab">Popular Trends</a></li>
-    <li role="presentation"><a href="#customSearch" aria-controls="customSearch" role="tab" data-toggle="tab">Custom Search</a></li>
+    <li role="presentation" id="socialMediaTrigger"><a href="#socialMedia" aria-controls="socialMedia" role="tab" data-toggle="tab">Social Media</a></li>
+    <li role="presentation" id="audienceTrigger"><a href="#audience" aria-controls="audience" role="tab" data-toggle="tab">Audience</a></li>
+    <li role="presentation" id="technologyTrigger"><a href="#technology" aria-controls="technology" role="tab" data-toggle="tab">Technology</a></li>
+    <li role="presentation" id="popularTrendsTrigger"><a href="#popularTrends" aria-controls="popularTrends" role="tab" data-toggle="tab">Popular Trends</a></li>
+    <li role="presentation" id="customSearchTrigger"><a href="#customSearch" aria-controls="customSearch" role="tab" data-toggle="tab">Custom Search</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -49,15 +48,19 @@
           <div class="col-sm-6">
 
             <section id="total-timeline"></section>
+            <h2 id="totalCount"></h2>
 
             <section id="unique-timeline"></section>
+            <h2 id="uniqueCount"></h2>
 
           </div>
           <div class="col-sm-6">
 
             <section id="average-time-timeline"></section>
+            <h2 id="averageCount"></h2>
 
             <section id="bounces-timeline"></section>
+            <h2 id="bounceCount"></h2>
 
           </div>
         </div>
@@ -119,17 +122,16 @@
       
       <div class="container">
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-sm-6">
+
+            <section id="device-timeline"></section>
 
             <section id="mobile-timeline"></section>
 
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-6">
 
             <section id="tablet-timeline"></section>
-
-          </div>
-          <div class="col-sm-4">
 
             <section id="desktop-timeline"></section>
 
@@ -151,6 +153,93 @@
     <!-- CUSTOM SEARCH TAB -->
     <div role="tabpanel" class="tab-pane fade" id="customSearch">
       
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-5">
+            <h3>Make your own Query!</h3>
+            <form id="queryInputs">
+              <div class="form-group">
+                <label>Search For: </label>
+                <select id="generalInput" class="form-control">
+                  <option value="ga:pageviews">Total Page Views</option>
+                  <option value="ga:uniquePageviews">Unique Page Views</option>
+                  <option value="ga:avgTimeOnPage">Average Time</option>
+                  <option value="ga:bounces">Bounces</option>
+                </select>
+              </div>
+              <br>
+              <div class="form-group">
+                <label>That Came From: </label>
+                <select id="socialInput" class="form-control">
+                  <option value="">Choose</option>
+                  <option value="ga:socialNetwork==Facebook">Facebook</option>
+                  <option value="ga:socialNetwork==Twitter">Twitter</option>
+                  <option value="ga:channelGrouping==Direct">Email</option>
+                </select>
+              </div>
+              <br>
+              <div class="form-group">
+                <label>Age: </label>
+                <select id="ageInput" class="form-control">
+                  <option value="">Choose</option>
+                  <option value="ga:userAgeBracket==18-24">18-24</option>
+                  <option value="ga:userAgeBracket==25-34">25-34</option>
+                  <option value="ga:userAgeBracket==35-44">35-44</option>
+                </select>
+              </div>
+              <br>
+              <div class="form-group">
+                <label>Gender: </label>
+                <select id="genderInput" class="form-control">
+                  <option value="">Choose</option>
+                  <option value="ga:userGender==female">Female</option>
+                  <option value="ga:userGender==male">Male</option>
+                </select>
+              </div>
+              <br>
+              <div class="form-group">
+                <label>Location: </label>
+                <input id="locationInput" type="text">
+              </div>
+              <br>
+              <div class="form-group">
+                <label>Technology: </label>
+                <select id="techInput" class="form-control">
+                  <option value="">Choose</option>
+                  <option value="ga:deviceCategory==desktop">Desktop</option>
+                  <option value="ga:deviceCategory==tablet">Tablet</option>
+                  <option value="ga:deviceCategory==mobile">Mobile</option>
+                </select>
+              </div>
+              <br>
+              <div class="form-group">
+                <label>Start Date: </label>
+                <input id="startDateInput"type="date">
+              </div>
+              <br>
+              <div class="form-group">
+                <label>End Date: </label>
+                <input id="endDateInput" type="date">
+              </div>
+              <br>
+              <div class="form-group">
+                <input type="submit">
+              </div>
+            </form>
+          </div>
+
+          <div class="col-sm-7">
+
+            <h1>Trial Picked values</h1>
+            <section id="custom-timeline"></section>
+
+            <div id="inputResults">
+              
+            </div>
+          </div>
+        </div>
+
+      </div>
 
     </div>
     <!-- END CUSTOM SEARCH TAB -->

@@ -1,29 +1,98 @@
 gapi.analytics.ready(function() {
-
-/* ================================= AUTHENICATION ================================= */
-  var CLIENT_ID = '1049929647905-ojik6prd1cl8n5ppc2slfq17slvv35qu.apps.googleusercontent.com';
-
-  // A built in component. Two methods - authorize() and isAuthorized() - boolean,
-  // Inherited methods - on, once, off ???(event, handler) events = success, error
   gapi.analytics.auth.authorize({
-    container: 'auth-button',
-    clientid: CLIENT_ID,
+    serverAuth: {
+      access_token: 'ya29.nQHd8aoTQiEcFItTPG8GPZf5vTUMArB4LxKJn1Zo5eFIQqI0MDmmon5PKgstJovTwZ1OK1ioVftA-g'
+    }
   });
 
-  /* OR
-   gapi.analytics.auth.authorize({
-    container: 'auth-button',
-    clientid: CLIENT_ID,
-  }); */
-
-/* ================================= END AUTHENICATION ================================= */
-
-
-/* ================================= CREATING A VIEW SELECTOR ================================= */
+  /* ================================= CREATING A VIEW SELECTOR ================================= */
                    /* WILL POTENTIALLY HAVE TO FIND A WAY TO GET RID OF THIS */
-  var viewSelector = new gapi.analytics.ViewSelector({
-    container: 'view-selector'
+  // var viewSelector = new gapi.analytics.ViewSelector({
+  //   container: 'view-selector'
+  // });
+  // FOR OUR PURPOSES, WE'RE JUST GOING TO DISPLAY ONE ID ga:96466207
+  var ids = 'ga:96466207';
+  var queryIds = {
+      query: {
+        ids: ids
+      }
+    };
+
+/* ================================= DATA ================================= */
+
+  var total = new gapi.analytics.report.Data({
+    query: {
+      'ids': 'ga:96466207',
+      'metrics': 'ga:pageViews',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
+    }
   });
+
+  total.on('success', function(response) {
+    var answer = response.rows[0][0];
+    console.log(answer);
+    $("#totalCount").html("<h2>Overall Total Views: " + answer + "</h2>");
+  });
+
+  total.execute();
+
+  var unique = new gapi.analytics.report.Data({
+    query: {
+      'ids': 'ga:96466207',
+      'metrics': 'ga:uniquePageviews',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
+    }
+  });
+
+  unique.on('success', function(response) {
+    var answer = response.rows[0][0];
+    console.log(answer);
+    $("#uniqueCount").html("<h2>Overall Unique Views: " + answer + "</h2>");
+  });
+
+  unique.execute();
+
+  var average = new gapi.analytics.report.Data({
+    query: {
+      'ids': 'ga:96466207',
+      'metrics': 'ga:avgTimeOnPage',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
+    }
+  });
+
+  average.on('success', function(response) {
+    var answer = response.rows[0][0];
+    console.log(answer);
+    $("#averageCount").html("<h2>Overall Average Time: " + answer + "</h2>");
+  });
+
+  average.execute();
+
+  var bounces = new gapi.analytics.report.Data({
+    query: {
+      'ids': 'ga:96466207',
+      'metrics': 'ga:bounces',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
+    }
+  });
+
+  bounces.on('success', function(response) {
+    var answer = response.rows[0][0];
+    console.log(answer);
+    $("#bounceCount").html("<h2>Overall Bounces: " + answer + "</h2>");
+  });
+
+  bounces.execute();
+
+/* ================================= END DATA ================================= */
 
 /* ================================= TIMELINES ================================= */
 
@@ -32,9 +101,10 @@ gapi.analytics.ready(function() {
     reportType: 'ga',
     query: {
       'dimensions': 'ga:date',
-      'metrics': 'ga:sessions',
+      'metrics': 'ga:pageviews',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
     },
     chart: {
       type: 'LINE',
@@ -49,6 +119,7 @@ gapi.analytics.ready(function() {
       'metrics': 'ga:uniquePageviews',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
     },
     chart: {
       type: 'LINE',
@@ -60,9 +131,10 @@ gapi.analytics.ready(function() {
     reportType: 'ga',
     query: {
       'dimensions': 'ga:date',
-      'metrics': 'ga:avgSessionDuration',
+      'metrics': 'ga:avgTimeOnPage',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
     },
     chart: {
       type: 'LINE',
@@ -77,6 +149,7 @@ gapi.analytics.ready(function() {
       'metrics': 'ga:bounces',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
     },
     chart: {
       type: 'LINE',
@@ -88,10 +161,12 @@ gapi.analytics.ready(function() {
   var facebookTimeline = new gapi.analytics.googleCharts.DataChart({
     reportType: 'ga',
     query: {
-      'dimensions': 'ga:socialNetwork',
-      'metrics': 'ga:sessions',
+      'dimensions': 'ga:date',
+      'metrics': 'ga:pageViews',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:socialNetwork==Facebook&&ga:pagePath==/index.php'
+      // remember to add ga:pagePath==/ and change the website to facebook
     },
     chart: {
       type: 'LINE',
@@ -103,9 +178,11 @@ gapi.analytics.ready(function() {
     reportType: 'ga',
     query: {
       'dimensions': 'ga:date',
-      'metrics': 'ga:users',
+      'metrics': 'ga:pageViews',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:socialNetwork==Twitter&&ga:pagePath==/index.php'
+      // remember to add ga:pagePath==/ and change the website to twitter
     },
     chart: {
       type: 'LINE',
@@ -117,9 +194,11 @@ gapi.analytics.ready(function() {
     reportType: 'ga',
     query: {
       'dimensions': 'ga:date',
-      'metrics': 'ga:avgUserTimingValue',
+      'metrics': 'ga:pageViews',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:channelGrouping==Direct&&ga:pagePath==/index.php'
+      // Using direct because the viewers will see it through a link
     },
     chart: {
       type: 'LINE',
@@ -127,31 +206,34 @@ gapi.analytics.ready(function() {
     }
   });
 
-  var searchTimeline = new gapi.analytics.googleCharts.DataChart({
-    reportType: 'ga',
-    query: {
-      'dimensions': 'ga:date',
-      'metrics': 'ga:organicSearches',
-      'start-date': '30daysAgo',
-      'end-date': 'yesterday',
-    },
-    chart: {
-      type: 'LINE',
-      container: 'search-timeline'
-    }
-  });
+  // var searchTimeline = new gapi.analytics.googleCharts.DataChart({
+  //   reportType: 'ga',
+  //   query: {
+  //     'dimensions': 'ga:date',
+  //     'metrics': 'ga:pageviews',
+  //     'start-date': '30daysAgo',
+  //     'end-date': 'yesterday',
+  //     'filters': 'ga:source==free-social-buttons.com'
+  //     // remember to add ga:pagePath==/ and change the website to google
+  //   },
+  //   chart: {
+  //     type: 'LINE',
+  //     container: 'search-timeline'
+  //   }
+  // });
 
   /* =================== AUDIENCE =================== */
   var ageTimeline = new gapi.analytics.googleCharts.DataChart({
     reportType: 'ga',
     query: {
       'dimensions': 'ga:userAgeBracket',
-      'metrics': 'ga:sessions',
+      'metrics': 'ga:pageviews',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
     },
     chart: {
-      type: 'LINE',
+      type: 'COLUMN',
       container: 'age-timeline'
     }
   });
@@ -160,12 +242,13 @@ gapi.analytics.ready(function() {
     reportType: 'ga',
     query: {
       'dimensions': 'ga:userGender',
-      'metrics': 'ga:sessions',
+      'metrics': 'ga:pageviews',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
     },
     chart: {
-      type: 'LINE',
+      type: 'COLUMN',
       container: 'gender-timeline'
     }
   });
@@ -173,10 +256,11 @@ gapi.analytics.ready(function() {
   var locationTimeline = new gapi.analytics.googleCharts.DataChart({
     reportType: 'ga',
     query: {
-      'dimensions': 'ga:city',
-      'metrics': 'ga:sessions',
+      'dimensions': 'ga:country',
+      'metrics': 'ga:pageviews',
       'start-date': '30daysAgo',
       'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
     },
     chart: {
       type: 'GEO',
@@ -185,37 +269,188 @@ gapi.analytics.ready(function() {
   });
 
   /* =================== TECHNOLOGY =================== */
+  var deviceTimeline = new gapi.analytics.googleCharts.DataChart({
+    reportType: 'ga',
+    query: {
+      'dimensions': 'ga:deviceCategory',
+      'metrics': 'ga:pageviews',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'filters': 'ga:pagePath==/index.php'
+    },
+    chart: {
+      type: 'BAR',
+      container: 'device-timeline'
+    }
+  });
+
+  var mobileTimeline = new gapi.analytics.googleCharts.DataChart({
+    reportType: 'ga',
+    query: {
+      'dimensions': 'ga:date',
+      'metrics': 'ga:pageviews',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'filters': 'ga:deviceCategory==mobile&&ga:pagePath==/index.php'
+    },
+    chart: {
+      type: 'COLUMN',
+      container: 'mobile-timeline'
+    }
+  });
+
+  var tabletTimeline = new gapi.analytics.googleCharts.DataChart({
+    reportType: 'ga',
+    query: {
+      'dimensions': 'ga:date',
+      'metrics': 'ga:pageviews',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'filters': 'ga:deviceCategory==tablet&&ga:pagePath==/index.php'
+    },
+    chart: {
+      type: 'LINE',
+      container: 'tablet-timeline'
+    }
+  });
+
+  var desktopTimeline = new gapi.analytics.googleCharts.DataChart({
+    reportType: 'ga',
+    query: {
+      'dimensions': 'ga:date',
+      'metrics': 'ga:pageviews',
+      'start-date': '30daysAgo',
+      'end-date': 'yesterday',
+      'filters': 'ga:deviceCategory==desktop&&ga:pagePath==/index.php'
+      // add the pagepath
+    },
+    chart: {
+      type: 'LINE',
+      container: 'desktop-timeline'
+    }
+  });
 
 /* ================================= END TIMELINES ================================= */
 
-/* ================================= FINISH ================================= */
-  gapi.analytics.auth.on('success', function(response) {
-    viewSelector.execute();
+/* ================================= AUTHENICATION ================================= */
+  
+  $(document).ready(function() {
+    // GENERAL
+    totalTimeline.set(queryIds).execute();
+    uniqueTimeline.set(queryIds).execute();
+    averageTimeTimeline.set(queryIds).execute();
+    bouncesTimeline.set(queryIds).execute();
+
+    $('#socialMediaTrigger').on('click', function() {
+      // SOCIAL MEDIA
+      console.log('Clicked Social');
+      facebookTimeline.set(queryIds).execute();
+      twitterTimeline.set(queryIds).execute();
+      emailTimeline.set(queryIds).execute();
+    // searchTimeline.set(queryIds).execute();
+    });
+
+    $('#audienceTrigger').on('click', function() {
+      // AUDIENCE
+      console.log('Clicked Audience');
+      ageTimeline.set(queryIds).execute();
+      genderTimeline.set(queryIds).execute();
+      locationTimeline.set(queryIds).execute();
+    });
+    
+    $('#technologyTrigger').on('click', function() {
+      // TECHNOLOGY
+      deviceTimeline.set(queryIds).execute();
+      mobileTimeline.set(queryIds).execute();
+      tabletTimeline.set(queryIds).execute();
+      desktopTimeline.set(queryIds).execute();
+    });
+  
+    $('#queryInputs').on('submit', function(e) {
+      e.preventDefault();
+
+
+      /* READ THE INFORMATION FROM SELECTORS */
+      var optionsVal = [];
+      var general = $('#generalInput').val();
+      optionsVal["social"] = $('#socialInput').val();
+      optionsVal["age"] = $('#ageInput').val();
+      optionsVal["gender"] = $('#genderInput').val();
+      optionsVal["location"] = $('#locationInput').val();
+      optionsVal["tech"] = $('#techInput').val();
+      var startDate = $('#startDateInput').val();
+      var endDate = $('#endDateInput').val();
+
+      /* RUN THE QUERY */
+      runCustomQuery(general, optionsVal, startDate, endDate, queryIds);
+    });
   });
 
-  viewSelector.on('change', function(ids) {
-    var newIds = {
-      query: {
-        ids: ids
-      }
+  function runCustomQuery(metrics, options, startDate, endDate, ids) {
+    // Setting up Times
+    if (startDate == "") {
+      startDate = '30daysAgo';
+    } else {
+      startDate = options["startDate"];
     }
 
-    /* SETTING ALL CHARTS */
-    // GENERAL
-    totalTimeline.set(newIds).execute();
-    uniqueTimeline.set(newIds).execute();
-    averageTimeTimeline.set(newIds).execute();
-    bouncesTimeline.set(newIds).execute();
-    // SOCIAL MEDIA
-    facebookTimeline.set(newIds).execute();
-    twitterTimeline.set(newIds).execute();
-    emailTimeline.set(newIds).execute();
-    searchTimeline.set(newIds).execute();
-    // AUDIENCE
-    ageTimeline.set(newIds).execute();
-    genderTimeline.set(newIds).execute();
-    locationTimeline.set(newIds).execute();
-    // TECHNOLOGY
+    if (endDate == "") {
+      endDate = 'yesterday';
+    } else {
+      endDate = options["endDate"];
+    }
 
-  });
+    var filters = "";
+
+    for(var key in options) {
+      if (options[key] != "") {
+        if (key == "location") {
+          options[key] = "ga:city==" + options[key];
+        }
+        if (filters == "") {
+          filters += options[key];
+        } else {
+          filters += "&&" + options[key];
+        }
+      }
+    }
+    console.log(filters);
+    console.log(startDate);
+    console.log(endDate);
+
+    if (filters) {
+      var customTimeline = new gapi.analytics.googleCharts.DataChart({
+        reportType: 'ga',
+        query: {
+          'dimensions': 'ga:date',
+          'metrics': metrics,
+          'start-date': startDate,
+          'end-date': endDate,
+          'filters': filters
+        },
+        chart: {
+          type: 'LINE',
+          container: 'custom-timeline'
+        }
+      });
+
+      customTimeline.set(ids).execute();
+    } else {
+      var customTimeline = new gapi.analytics.googleCharts.DataChart({
+        reportType: 'ga',
+        query: {
+          'dimensions': 'ga:date',
+          'metrics': metrics,
+          'start-date': startDate,
+          'end-date': endDate,
+        },
+        chart: {
+          type: 'LINE',
+          container: 'custom-timeline'
+        }
+      });
+
+      customTimeline.set(ids).execute();
+    }
+  }
 });

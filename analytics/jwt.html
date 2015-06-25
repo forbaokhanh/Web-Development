@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8' />
+<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+<title>JWT(JSON Web Token) generator</title>
+
+<script language="JavaScript" type="text/javascript" src="http://kjur.github.io/jsrsasign/jsrsasign-4.1.4-all-min.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/json-minified.js"></script>
+<script language="JavaScript" type="text/javascript" src="js/jws-3.1.min.js"></script>
+
+<script src="https://apis.google.com/js/client.js"></script>    
+
+<script language="JavaScript" type="text/javascript">
+
+function requestAccessToken() {
+    var XHR = new XMLHttpRequest();
+    var urlEncodedData = "";
+    var urlEncodedDataPairs = [];
+
+    urlEncodedDataPairs.push(encodeURIComponent("grant_type") + '=' + encodeURIComponent("urn:ietf:params:oauth:grant-type:jwt-bearer"));
+    urlEncodedDataPairs.push(encodeURIComponent("assertion") + '=' + encodeURIComponent(doSign()));
+    urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+
+    // We define what will happen if the data are successfully sent
+    XHR.addEventListener('load', function(event) {
+        var response = JSON.parse(XHR.responseText);
+        token = response["access_token"];
+        console.log(token);
+        return token;
+    });
+
+    // We define what will happen in case of error
+    XHR.addEventListener('error', function(event) {
+        console.log('Oops! Something went wrong.');
+    });
+
+    XHR.open('POST', 'https://www.googleapis.com/oauth2/v3/token');
+    XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    XHR.send(urlEncodedData);
+
+}
+
+//JWS signature algorithm: SHA256withRSA with PKCS#8 plain private key(z4)
+function doSign() {
+    var sClaim = JSON.stringify(getClaim());
+
+    var pHeader = {"alg":"RS256","typ":"JWT"}
+    var sHeader = JSON.stringify(pHeader);
+
+    var key = myPrivateKey;
+
+    var sJWS = KJUR.jws.JWS.sign(null, sHeader, sClaim, key);
+
+    return sJWS;
+}
+
+function getClaim() {
+    var pClaim = {};
+    pClaim.aud = "https://www.googleapis.com/oauth2/v3/token";
+    pClaim.scope = "https://www.googleapis.com/auth/analytics.readonly";
+    pClaim.iss = "118800867949-n0be83m9v5oi36a62604obukjh5fl0kv@developer.gserviceaccount.com";
+    pClaim.exp = KJUR.jws.IntDate.get("now + 1hour");
+    pClaim.iat = KJUR.jws.IntDate.get("now");
+    return pClaim;
+}
+
+//skipped my private key
+var myPrivateKey = "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCXV8QxuFXSHlgW\nQlKcLGeTqoTxMbdN1aNjsRol7rfjIFno4NugQa2sico6p+zHa/KikYi7PJi8x5sq\nTqcY6+omz5pdOmrbtOqjIfP1KABw2/vkNKA/ITizL44x3ptr/lrV89FS2Tc5F89F\n8Ndm4v6q7HgDGa7mecW8u65lS0d8SDFmT3iwJdbs64+pOTxDS7Qxd360XEp1DaD8\nc8/Qn7myJcjr7MVj0Oec86P5/D//Rz1CxFDSo86jBEl4zdI0AyxDLkSDIap/jK5N\nVk2refSGUWneXyUoc+t0/EjeBhY3HmJvwz3delMjBXLf+gt/vCLleXjwR9CFEnHi\nQa02okpXAgMBAAECggEBAJISHcS3W+2/Z9mkDcO6gAXgMQvypi8zoc2Yo9o0u7s2\nAFFqpc/ZVF0RaOSQK1KW98q8mLHO3MRoC3UcEN9W49qtyRluRrDjvwvQu3vFLhe/\n2zD5Mil8URNxNNchOfVTvCyAdWp3SHuMZXvl5qDhOleSgIrNgSfmJFny83HE5Kwo\nLbjO511ik2EA3dkScoJE3rS4SzrQzmhEfbaNiDVQrimZJJQv4YeyhVX0prjKdhc7\nqoyeWNxF3kcky1IJ1RfC9nRTSd5Lkv9kqZTKsBhZBsiVZ+J2C+sWiobnC6Auc/o5\nLt41P+br6zAXa351pFdlj6WfVxvLmce5UYH9pdVvCXECgYEAxzRE6QtT5smRo/4o\nVdTLb3d5T/3AE9K2FT1lSCGNEy4fYjZFngYPme+mNUPPx4ubb/OwCwDZ6ZWHGyS3\ne+/ePn6+sNEQnti20ogwj7qtETSWvY1Wa9UP0cSRESlWn91wrYv8VbVqOP++qpnu\nf/N8EM0NpROMt7CMQ0xKzrwaHmsCgYEAwn4kTOmv4cvuaHFgWx//GEpLf/nh2Bqe\n0RQK2iM5IhMpAw3+KTzcBMkQ7rvunjaVgtLTyYMVl0MLgphqQ0EThmnYTQR0AHYd\n6yS7hjkYM4ksuowEk/1xf4CK31nbvvAM+QGUdE85Xdz5f8f2gTDjxlHEAze5gyC+\ng3+SGFlPJsUCgYEAhYQdI+35wFgeC8LQGidUa1OytdCoKyEx9a5+8ge63L4vPs6N\nfsslLdIYnt7ipyaFelXlCpr5c7xLIABOEv3FAjJFcZHPCAjNEPNDSTKfyUZsOoQ/\nBmt5/Ok5Kj2A2Am9+jQ3XuMHXUjc7M/bsVrrLv+hQ6GE0aG9gWXjRgmBoB0CgYB7\nhU1co5WWW8QABPFjLkD+lkC4+GRcsRtoQchancAtSenkDMD8Q7CgQWpFlImJZbUy\nrt7evie6N1RaDp5+NBhIZ3R+BXP+zwVVT7DhH+Wk5VvI5iAKNQ4eIe8Qxqru6tny\nUvSLob0XRb4XT1HY3snqLAfG218wTl1wela4rA++2QKBgFgnE2Fg82tINbCcLhuD\nguxJSFyArp+3j4No6ltMFClaIWUJoc5JfP5Wz7d5n7Gg0ctBlk71kii09pxMkOM5\nXfM2YcO2YlrREOj/jjsyaL/23UCKxhI7KpDULfs00HCrQrZ99w0tZmIHHCdjd9ho\n/ifB8vZW3z1+ABFY72ukG20U\n-----END PRIVATE KEY-----\n"
+
+</script>
+</head>
+
+<body>
+    <form name="myform">  
+        <h4>Press "Sign it" to generate signed JWT!</h4>
+        <input type="button" value="Sign it and get Access Token!" onClick="requestAccessToken();"/> <br/><br/>
+        <div>JWT:</div>
+        <textarea name="jwt" cols="65" rows="10"></textarea><br/><br/>
+        <div>Access Token:</div>
+        <textarea name="accessToken" cols="65" rows="10"></textarea><br/>
+    </form>
+</body>
+</html> 
